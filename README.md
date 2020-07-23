@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3957938.svg)](https://doi.org/10.5281/zenodo.3957938)
+
 # Molar mass calculator
  A simple calculator for molar masses of compounds.
 
