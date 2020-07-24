@@ -84,7 +84,42 @@ class MolarMass():
                 structure.append(self.data.loc[i,"Element"] + str(self.data.loc[i,"Quantity"]))
         structure = ''.join(structure)
         return f"The structure {structure} has a molar weigth of M={self.M} g/mol."
+    
+    def get_precursor(self):
+        pre_number = int(input('How many precursors do you use?'))
+        self.precursor_data = pd.DataFrame(np.empty((pre_number, 5)), columns = ["Precursor", "Molar Mass", "Quantity", "Total Molar Mass", "Gram"])
+        print(f'Now for each precursor:')
+        for i in range(pre_number):
+            pre_name = input(f'What is precursor No. {i+1} called?')
+            pre_m = int(input(f'How many elements does precursor No {i+1} ({pre_name}) have?'))
+            precursor = pd.DataFrame(np.empty((pre_m, 4)), columns = ["Element", "Molar Mass", "Quantity", "Total Molar Mass"])
+            for m in range(pre_m):
+                precursor.loc[m,"Element"] = input(f'What element is present?')
+                precursor.loc[m,"Molar Mass"] = float(self.database[precursor.loc[m,"Element"]])
+                precursor.loc[m,"Quantity"] = float(input('How often?'))
+                precursor.loc[m,"Total Molar Mass"] = precursor.loc[m,"Molar Mass"] * precursor.loc[m,"Quantity"]
+            precursor_M = precursor["Total Molar Mass"].sum()
+            self.precursor_data.loc[i, "Precursor"] = pre_name
+            self.precursor_data.loc[i, "Molar Mass"] = precursor_M
+            self.precursor_data.loc[i, "Quantity"] = float(input('How often is the precursor present?'))
+            self.precursor_data.loc[i, "Total Molar Mass"] = self.precursor_data.loc[i,"Molar Mass"] * self.precursor_data.loc[i,"Quantity"]
+        return self.precursor_data
+    
+    def precursor(self):
+        print(f'Ah, you want to calculate the necessary precursor masses? Nice!')
+        print(f"Let's try it!")
+        self.get_precursor()
+        sample_mass = float(input("How much sample do you want to synthesize? [g]"))
+        sample_mol = sample_mass/self.M
+        for i in range(self.precursor_data.shape[0]):
+            self.precursor_data.loc[i, "Gram"] = self.precursor_data.loc[i, "Total Molar Mass"] * sample_mol
+            print(f'You will need {round(self.precursor_data.loc[i, "Gram"],4)} g of {self.precursor_data.loc[i, "Precursor"]}')
+        print(self.precursor_data)
+        
+        
+
 
 if __name__ == "__main__":
     test = MolarMass()
     print(test)
+    print(test.precursor())
