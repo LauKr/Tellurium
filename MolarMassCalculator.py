@@ -8,10 +8,12 @@ Created on Sun Jun 28 13:31:32 2020
 import numpy as np
 import pandas as pd
 
-
 Version = "0.2"
 
+
 class MolarMass():
+    """
+    """
     def __init__(self):
         self.database = {
                         'H': 1.00794, 'He': 4.002602, 'Li': 6.941,
@@ -54,76 +56,105 @@ class MolarMass():
                         }
         print(f'Hello, welcome to Molar-Mass-Calculator Version {Version}.\n')
         try:
-            n = int(input('How many elements do you want to use?'))
-            #self.calculate(n)
-        except ValueError:
-            print("Oops!  What exacly did you enter? It should be an integer.")
-
-    def calculate(self, n=1):
-        self.data = pd.DataFrame(np.empty((n, 4)), columns = ["Element", "Molar Mass", "Quantity", "Total Molar Mass"])
-        print('Now step by step:')
-        for i in range(n):
-            self.data.loc[i,"Element"] = input(f'What element is present?')
-            self.data.loc[i,"Molar Mass"] = float(self.database[self.data.loc[i,"Element"]])
-            self.data.loc[i,"Quantity"] = float(input('How often?'))
-            self.data.loc[i,"Total Molar Mass"] = self.data.loc[i,"Molar Mass"] * self.data.loc[i,"Quantity"]
+            name = input("How is your structure called?")
+            print(f"Let's see what we can find for {name}...")
+            self.data = self.get_elements(name)
             self.M = self.data["Total Molar Mass"].sum()
-        return self.M
+        except ValueError as err:
+            print("Oops!  What exacly did happen?\n")
+            print(err)
 
     def __call__(self):
-        """ If called, i.e. XYZ = MolarMass(); XYZ(), the functions returns the total Molar Mass."""
+        """If called, i.e. XYZ = MolarMass(); XYZ(), the functions returns the total Molar Mass."""
         return self.M
 
     def __repr__(self):
         structure = []
         for i in range(self.data["Element"].shape[0]):
-            if self.data.loc[i,"Quantity"] == 1:
-                structure.append(self.data.loc[i,"Element"])
+            if self.data.loc[i, "Quantity"] == 1:
+                structure.append(self.data.loc[i, "Element"])
             else:
-                structure.append(self.data.loc[i,"Element"] + str(self.data.loc[i,"Quantity"]))
+                if self.data.loc[i, "Quantity"].is_integer():
+                    quant = int(self.data.loc[i, "Quantity"])
+                else:
+                    quant = self.data.loc[i, "Quantity"]
+
+                structure.append(self.data.loc[i, "Element"] + str(quant))
         structure = ''.join(structure)
         return f"The structure {structure} has a molar weigth of M={self.M} g/mol."
 
     def get_elements(self, name):
+        """
+
+        This function first trys to convert the input <name> into the information on
+        which elements occure how often. If that fails the user can manually insert
+        that information.
+
+        Parameters
+        ----------
+        name : string
+            The name of the structure. Example: "La2O3"
+
+        Returns
+        -------
+        data_var : pandas.DataFrame
+            A dataframe with elements, molar masses and quantity of the structure.
+
+        """
         try:
             tmp = 0
             n = 0
-            data_var = pd.DataFrame(np.empty((1, 4)), columns = ["Element", "Molar Mass", "Quantity", "Total Molar Mass"])
+            data_var = pd.DataFrame(np.empty((1, 4)), columns=["Element",
+                                "Molar Mass", "Quantity", "Total Molar Mass"])
             for i in range(len(name)):
                 if name[i].isnumeric():
-                    if not name[i-1].isnumeric():
-                        data_var.loc[n,"Element"] = name[tmp:i]
+                    if name[i-1] == '.':
+                        pass
+                    elif not name[i-1].isnumeric():
+                        data_var.loc[n, "Element"] = name[tmp:i]
                         tmp = i
                     else:
                         pass
                 elif name[i].isupper():
                     if not name[i-1].isnumeric():
-                        # No Number -> 1
-                        data_var.loc[n,"Element"] = name[tmp:i]
-                        data_var.loc[n,"Quantity"] = 1
+                        # No number -> 1
+                        data_var.loc[n, "Element"] = name[tmp:i]
+                        data_var.loc[n, "Quantity"] = 1
                     elif i == 0:
                         continue
                     else:
-                        data_var.loc[n,"Quantity"] = float(name[tmp:i])
+                        data_var.loc[n, "Quantity"] = float(name[tmp:i])
                     tmp = i
-                    data_var.append(pd.DataFrame(np.empty((1, 4)), columns = ["Element", "Molar Mass", "Quantity", "Total Molar Mass"]))
+                    data_var.append(pd.DataFrame(np.empty((1, 4)), columns=[
+                        "Element", "Molar Mass", "Quantity", "Total Molar Mass"]))
                     if not i == 0:
                         n += 1
                 if i == len(name)-1:
                     if name[i].isnumeric():
                         for j in range(len(name)):
                             if not name[-(j+1)].isnumeric():
-                                data_var.loc[n,"Quantity"] = float(name[len(name)-j:])
+                                data_var.loc[n, "Quantity"] = float(name[len(name)-j:])
                                 break
                     else:
-                        data_var.loc[n,"Quantity"] = 1
+                        data_var.loc[n, "Quantity"] = 1
             for i in range(data_var.shape[0]):
-                data_var.loc[i,"Molar Mass"] = float(self.database[data_var.loc[i,"Element"]])
-                data_var.loc[i,"Total Molar Mass"] = data_var.loc[i,"Molar Mass"] * data_var.loc[i,"Quantity"]
+                data_var.loc[i, "Molar Mass"] = float(self.database[data_var.loc[i, "Element"]])
+                data_var.loc[i, "Total Molar Mass"] = data_var.loc[i, "Molar Mass"] * data_var.loc[i, "Quantity"]
             return data_var
-        except:
+        except ValueError as err:
             print(f"I'm sorry, I couldn't translate {name} into a structural formular.")
-            print("Maybe try it manually.")
+            print(err.args)
+            print("Maybe try it manually:\n")
+            # manual Input
+            n = int(input('How many elements do you want to use?'))
+            data_var = pd.DataFrame(np.empty((n, 4)), columns=["Element", "Molar Mass", "Quantity", "Total Molar Mass"])
+            print('Now step by step:')
+            for i in range(n):
+                data_var.loc[i, "Element"] = input(f'What element is present?')
+                data_var.loc[i, "Molar Mass"] = float(self.database[self.data.loc[i, "Element"]])
+                data_var.loc[i, "Quantity"] = float(input('How often?'))
+                data_var.loc[i, "Total Molar Mass"] = self.data.loc[i, "Molar Mass"] * self.data.loc[i, "Quantity"]
+            return data_var
 
 
     def get_precursor(self):
@@ -137,22 +168,22 @@ class MolarMass():
 
         """
         pre_number = int(input('How many precursors do you use?'))
-        self.precursor_data = pd.DataFrame(np.empty((pre_number, 5)), columns = ["Precursor", "Molar Mass", "Quantity", "Total Molar Mass", "Gram"])
+        self.precursor_data = pd.DataFrame(np.empty((pre_number, 5)), columns=["Precursor", "Molar Mass", "Quantity", "Total Molar Mass", "Gram"])
         print(f'Now for each precursor:')
         for i in range(pre_number):
             pre_name = input(f'What is precursor No. {i+1} called?')
             pre_m = int(input(f'How many elements does precursor No {i+1} ({pre_name}) have?'))
-            precursor = pd.DataFrame(np.empty((pre_m, 4)), columns = ["Element", "Molar Mass", "Quantity", "Total Molar Mass"])
+            precursor = pd.DataFrame(np.empty((pre_m, 4)), columns=["Element", "Molar Mass", "Quantity", "Total Molar Mass"])
             for m in range(pre_m):
-                precursor.loc[m,"Element"] = input(f'What element is present?')
-                precursor.loc[m,"Molar Mass"] = float(self.database[precursor.loc[m,"Element"]])
-                precursor.loc[m,"Quantity"] = float(input('How often?'))
-                precursor.loc[m,"Total Molar Mass"] = precursor.loc[m,"Molar Mass"] * precursor.loc[m,"Quantity"]
+                precursor.loc[m, "Element"] = input(f'What element is present?')
+                precursor.loc[m, "Molar Mass"] = float(self.database[precursor.loc[m, "Element"]])
+                precursor.loc[m, "Quantity"] = float(input('How often?'))
+                precursor.loc[m, "Total Molar Mass"] = precursor.loc[m, "Molar Mass"] * precursor.loc[m, "Quantity"]
             precursor_M = precursor["Total Molar Mass"].sum()
             self.precursor_data.loc[i, "Precursor"] = pre_name
             self.precursor_data.loc[i, "Molar Mass"] = precursor_M
             self.precursor_data.loc[i, "Quantity"] = float(input('How often is the precursor present?'))
-            self.precursor_data.loc[i, "Total Molar Mass"] = self.precursor_data.loc[i,"Molar Mass"] * self.precursor_data.loc[i,"Quantity"]
+            self.precursor_data.loc[i, "Total Molar Mass"] = self.precursor_data.loc[i, "Molar Mass"] * self.precursor_data.loc[i, "Quantity"]
         return self.precursor_data
 
     def precursor(self):
@@ -176,11 +207,7 @@ class MolarMass():
         return self.precursor_data
 
 
-
-
 if __name__ == "__main__":
     test = MolarMass()
-    #print(test)
-    #print(test.precursor())
-    data_var = pd.DataFrame(np.empty((2, 4)), columns = ["Element", "Molar Mass", "Quantity", "Total Molar Mass"])
-    data_var = test.get_elements("1")
+    print(test)
+    # print(test.precursor())
