@@ -8,13 +8,14 @@ Created on Sun Jun 28 13:31:32 2020
 import numpy as np
 import pandas as pd
 
-Version = "0.2"
+version = "0.3"
 
 
-class MolarMass():
+class molar_mass():
     """
+    The class molar_mass() can calculate the molar mass of an given structure name <name>
     """
-    def __init__(self):
+    def __init__(self, name=''):
         self.database = {
                         'H': 1.00794, 'He': 4.002602, 'Li': 6.941,
                         'Be': 9.012182, 'B': 10.811, 'C': 12.0107,
@@ -54,9 +55,10 @@ class MolarMass():
                         'Rg': 281, 'Cn': 285, 'Nh': 284, 'Fl': 289, 'Mc': 289,
                         'Lv': 292, 'Ts': 294, 'Og': 294
                         }
-        print(f'Hello, welcome to Molar-Mass-Calculator Version {Version}.\n')
+        print(f'Hello, welcome to Molar-Mass-Calculator Version {version}.\n')
         try:
-            name = input("How is your structure called?")
+            if name == '':
+                name = input("How is your structure called?")
             print(f"Let's see what we can find for {name}...")
             self.data = self.get_elements(name)
             self.M = self.data["Total Molar Mass"].sum()
@@ -65,10 +67,19 @@ class MolarMass():
             print(err)
 
     def __call__(self):
-        """If called, i.e. XYZ = MolarMass(); XYZ(), the functions returns the total Molar Mass."""
+        """If called, i.e. XYZ = molar_mass(); XYZ(), the functions returns the total Molar Mass."""
         return self.M
 
     def __repr__(self):
+        """
+        Magic function for e.g. print(molar_mass())
+
+        Returns
+        -------
+        str
+            A small information on the molar mass of the structure.
+
+        """
         structure = []
         for i in range(self.data["Element"].shape[0]):
             if self.data.loc[i, "Quantity"] == 1:
@@ -102,10 +113,14 @@ class MolarMass():
 
         """
         try:
+            if len(name) == 0:
+                raise ValueError("Seems like your structure name is empty.")
             tmp = 0
             n = 0
             data_var = pd.DataFrame(np.empty((1, 4)), columns=["Element",
-                                "Molar Mass", "Quantity", "Total Molar Mass"])
+                                                               "Molar Mass",
+                                                               "Quantity",
+                                                               "Total Molar Mass"])
             for i in range(len(name)):
                 if name[i].isnumeric():
                     if name[i-1] == '.':
@@ -156,36 +171,6 @@ class MolarMass():
                 data_var.loc[i, "Total Molar Mass"] = self.data.loc[i, "Molar Mass"] * self.data.loc[i, "Quantity"]
             return data_var
 
-
-    def get_precursor(self):
-        """
-
-
-        Returns
-        -------
-        pandas.DataFrame
-            Data of the different precursers used including their molar mass.
-
-        """
-        pre_number = int(input('How many precursors do you use?'))
-        self.precursor_data = pd.DataFrame(np.empty((pre_number, 5)), columns=["Precursor", "Molar Mass", "Quantity", "Total Molar Mass", "Gram"])
-        print(f'Now for each precursor:')
-        for i in range(pre_number):
-            pre_name = input(f'What is precursor No. {i+1} called?')
-            pre_m = int(input(f'How many elements does precursor No {i+1} ({pre_name}) have?'))
-            precursor = pd.DataFrame(np.empty((pre_m, 4)), columns=["Element", "Molar Mass", "Quantity", "Total Molar Mass"])
-            for m in range(pre_m):
-                precursor.loc[m, "Element"] = input(f'What element is present?')
-                precursor.loc[m, "Molar Mass"] = float(self.database[precursor.loc[m, "Element"]])
-                precursor.loc[m, "Quantity"] = float(input('How often?'))
-                precursor.loc[m, "Total Molar Mass"] = precursor.loc[m, "Molar Mass"] * precursor.loc[m, "Quantity"]
-            precursor_M = precursor["Total Molar Mass"].sum()
-            self.precursor_data.loc[i, "Precursor"] = pre_name
-            self.precursor_data.loc[i, "Molar Mass"] = precursor_M
-            self.precursor_data.loc[i, "Quantity"] = float(input('How often is the precursor present?'))
-            self.precursor_data.loc[i, "Total Molar Mass"] = self.precursor_data.loc[i, "Molar Mass"] * self.precursor_data.loc[i, "Quantity"]
-        return self.precursor_data
-
     def precursor(self):
         """
 
@@ -198,7 +183,18 @@ class MolarMass():
         """
         print(f'Ah, you want to calculate the necessary precursor masses? Nice!')
         print(f"Let's try it!")
-        self.get_precursor()
+        pre_number = int(input('How many precursors do you use?'))
+        self.precursor_data = pd.DataFrame(np.empty((pre_number, 5)), columns=["Precursor", "Molar Mass", "Quantity", "Total Molar Mass", "Gram"])
+        print(f'Now for each precursor:')
+        for i in range(pre_number):
+            pre_name = input(f'What is precursor No. {i+1} called?')
+            precursor = self.get_elements(pre_name)
+            precursor_M = precursor["Total Molar Mass"].sum()
+            self.precursor_data.loc[i, "Precursor"] = pre_name
+            self.precursor_data.loc[i, "Molar Mass"] = precursor_M
+            self.precursor_data.loc[i, "Quantity"] = float(input('How often is the precursor present?'))
+            self.precursor_data.loc[i, "Total Molar Mass"] = self.precursor_data.loc[i, "Molar Mass"] * self.precursor_data.loc[i, "Quantity"]
+
         sample_mass = float(input("How much sample do you want to synthesize? [g]"))
         sample_mol = sample_mass/self.M
         for i in range(self.precursor_data.shape[0]):
@@ -208,6 +204,6 @@ class MolarMass():
 
 
 if __name__ == "__main__":
-    test = MolarMass()
-    print(test)
+    structure = 'La2O3'
+    print(molar_mass(structure))
     # print(test.precursor())
