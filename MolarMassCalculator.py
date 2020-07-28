@@ -8,13 +8,18 @@ Created on Sun Jun 28 13:31:32 2020
 import numpy as np
 import pandas as pd
 
-version = "0.3"
+VERSION = "1.0.0"
 
 
 class molar_mass():
     """
-    The class molar_mass() can calculate the molar mass of an given structure name <name>
+    Calculate the molar mass of an given structure name <name>.
+
+    Contains the methods:
+        get_elements(self, name): Converts <name> into information.
+        precursor(self): Calculates the masses of prrecursor necessary.
     """
+
     def __init__(self, name=''):
         self.database = {
                         'H': 1.00794, 'He': 4.002602, 'Li': 6.941,
@@ -55,13 +60,14 @@ class molar_mass():
                         'Rg': 281, 'Cn': 285, 'Nh': 284, 'Fl': 289, 'Mc': 289,
                         'Lv': 292, 'Ts': 294, 'Og': 294
                         }
-        print(f'Hello, welcome to Molar-Mass-Calculator Version {version}.\n')
+        print(f'Hello, welcome to Molar-Mass-Calculator Version {VERSION}.\n')
         try:
             if name == '':
                 name = input("How is your structure called?")
             print(f"Let's see what we can find for {name}...")
             self.data = self.get_elements(name)
             self.M = self.data["Total Molar Mass"].sum()
+            self.precursor_data = pd.DataFrame(columns=["Precursor", "Molar Mass", "Quantity", "Total Molar Mass", "Gram"])
         except ValueError as err:
             print("Oops!  What exacly did happen?\n")
             print(err)
@@ -72,34 +78,34 @@ class molar_mass():
 
     def __repr__(self):
         """
-        Magic function for e.g. print(molar_mass())
+        Magic function for e.g. print(molar_mass()).
 
         Returns
         -------
         str
             A small information on the molar mass of the structure.
-
         """
-        structure = []
+        structure_name = []
         for i in range(self.data["Element"].shape[0]):
             if self.data.loc[i, "Quantity"] == 1:
-                structure.append(self.data.loc[i, "Element"])
+                structure_name.append(self.data.loc[i, "Element"])
             else:
                 if self.data.loc[i, "Quantity"].is_integer():
                     quant = int(self.data.loc[i, "Quantity"])
                 else:
                     quant = self.data.loc[i, "Quantity"]
 
-                structure.append(self.data.loc[i, "Element"] + str(quant))
-        structure = ''.join(structure)
-        return f"The structure {structure} has a molar weigth of M={self.M} g/mol."
+                structure_name.append(self.data.loc[i, "Element"] + str(quant))
+        structure_name = ''.join(structure_name)
+        return f"The structure {structure_name} has a molar weigth of M={self.M} g/mol."
 
     def get_elements(self, name):
         """
+        Convert <name> into which element occures how often.
 
-        This function first trys to convert the input <name> into the information on
-        which elements occure how often. If that fails the user can manually insert
-        that information.
+        Tries to convert the input <name> into the information on
+        which elements occure how often.
+        If that fails the user can manually insert that information.
 
         Parameters
         ----------
@@ -110,7 +116,6 @@ class molar_mass():
         -------
         data_var : pandas.DataFrame
             A dataframe with elements, molar masses and quantity of the structure.
-
         """
         try:
             if len(name) == 0:
@@ -123,13 +128,11 @@ class molar_mass():
                                                                "Total Molar Mass"])
             for i in range(len(name)):
                 if name[i].isnumeric():
-                    if name[i-1] == '.':
+                    if name[i-1] == '.' or name[i-1].isnumeric():
                         pass
-                    elif not name[i-1].isnumeric():
+                    else:
                         data_var.loc[n, "Element"] = name[tmp:i]
                         tmp = i
-                    else:
-                        pass
                 elif name[i].isupper():
                     if not name[i-1].isnumeric():
                         # No number -> 1
@@ -141,20 +144,26 @@ class molar_mass():
                         data_var.loc[n, "Quantity"] = float(name[tmp:i])
                     tmp = i
                     data_var.append(pd.DataFrame(np.empty((1, 4)), columns=[
-                        "Element", "Molar Mass", "Quantity", "Total Molar Mass"]))
+                        "Element", "Molar Mass", "Quantity", "Total Molar Mass"
+                        ]))
                     if not i == 0:
                         n += 1
                 if i == len(name)-1:
+                    # The last is propably no uppercase
                     if name[i].isnumeric():
                         for j in range(len(name)):
                             if not name[-(j+1)].isnumeric():
                                 data_var.loc[n, "Quantity"] = float(name[len(name)-j:])
                                 break
-                    else:
+                    elif name[i].isalpha():
+                        data_var.loc[n, "Element"] = name[tmp:i+1]
                         data_var.loc[n, "Quantity"] = 1
+                    else:
+                        raise ValueError('ValueError: Wait, what is your last character? Neither number nor a letter?')
             for i in range(data_var.shape[0]):
                 data_var.loc[i, "Molar Mass"] = float(self.database[data_var.loc[i, "Element"]])
                 data_var.loc[i, "Total Molar Mass"] = data_var.loc[i, "Molar Mass"] * data_var.loc[i, "Quantity"]
+            print(data_var)
             return data_var
         except ValueError as err:
             print(f"I'm sorry, I couldn't translate {name} into a structural formular.")
@@ -166,25 +175,25 @@ class molar_mass():
             print('Now step by step:')
             for i in range(n):
                 data_var.loc[i, "Element"] = input(f'What element is present?')
-                data_var.loc[i, "Molar Mass"] = float(self.database[self.data.loc[i, "Element"]])
+                data_var.loc[i, "Molar Mass"] = float(self.database[data_var.loc[i, "Element"]])
                 data_var.loc[i, "Quantity"] = float(input('How often?'))
-                data_var.loc[i, "Total Molar Mass"] = self.data.loc[i, "Molar Mass"] * self.data.loc[i, "Quantity"]
+                data_var.loc[i, "Total Molar Mass"] = data_var.loc[i, "Molar Mass"] * data_var.loc[i, "Quantity"]
             return data_var
 
     def precursor(self):
         """
-
+        Calculate the necessary masses of precursor materials.
 
         Returns
         -------
         pandas.DataFrame
             An overview of the different precursers used.
-
         """
         print(f'Ah, you want to calculate the necessary precursor masses? Nice!')
         print(f"Let's try it!")
         pre_number = int(input('How many precursors do you use?'))
-        self.precursor_data = pd.DataFrame(np.empty((pre_number, 5)), columns=["Precursor", "Molar Mass", "Quantity", "Total Molar Mass", "Gram"])
+        self.precursor_data = pd.DataFrame(np.empty((pre_number, 5)), columns=[
+            "Precursor", "Molar Mass", "Quantity", "Total Molar Mass", "Gram"])
         print(f'Now for each precursor:')
         for i in range(pre_number):
             pre_name = input(f'What is precursor No. {i+1} called?')
@@ -203,7 +212,31 @@ class molar_mass():
         return self.precursor_data
 
 
+def calculate(name=''):
+    """
+    Calculate the molar mass and return it as float. You can use M = calculate()
+
+    Parameters
+    ----------
+    name : string, optional
+        Structure name. When empty, manual input. The default is ''.
+
+    Returns
+    -------
+    M : float
+        The molar mass of <name>.
+
+    """
+    molar_mass_name = molar_mass(name)
+    M = molar_mass_name()
+    return M
+
+
 if __name__ == "__main__":
-    structure = 'La2O3'
-    print(molar_mass(structure))
-    # print(test.precursor())
+    test = molar_mass()
+    print(test)
+    input_pre = input('Do you also want to calculate precursor masses? [y/N]')
+    if input_pre == ('y' or 'Y' or 'yes' or 'Yes'):
+        print(test.precursor())
+    elif input_pre == ('n' or 'N' or 'no' or 'No'):
+        print(f'Thank you for using molar_mass_calculator V{VERSION}.\nSee you!')
