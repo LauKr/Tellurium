@@ -5,27 +5,83 @@
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
 ### Prerequisites
 
 The program requires Python 3.x
 ```
-$ sudo apt-get install python3.6
+$ apt-get install python3.6
+```
+as well as numpy & pandas
+```
+$ pip install numpy pandas
 ```
 
 ### Setup
 
-Just unzip the zip-folder and use python for starting the [MolarMassCalculator.py](MolarMassCalculator.py) file.
+Get the .py file by either cloning, downloading or downloading as .zip and unzipping.
+Then use python for starting the [MolarMassCalculator.py](MolarMassCalculator.py) file.
 
-For example
-```
-$ unzip Molar-mass-calculator.zip
-```
-and afterwards
+For example:
 ```
 $ python3 Molar-mass-calculator/MolarMassCalculator.py
 ```
+
+### Usage
+
+#### Basics
+The program should ask for a structure name. This name can be inserted like _La2O3_. If the name cannot automatically converted into the necessary information which elements occure how often, the user will be asked to insert this information manually.
+The molar mass is is printed and the user will be asked if he/she wants to calculate the precursor masses necessary for the reaction.
+This information should be inserted like in the following example:
+
+**Reaction:** H2 + 1/2 O2 -> H2O
+
+**Input:**
+
+_How many precursors do you use?_ **2**
+
+_What is precursor No. 1 called?_ **H2**
+
+_How often is the precursor present?_ **1**
+
+_What is precursor No. 1 called?_ **O2**
+
+_How often is the precursor present?_ **0.5**
+
+_How much sample do you want to synthesize? [g]_ **1**
+
+**Output:**
+
+You will need 0.1119 g of H2
+
+You will need 0.8881 g of O2
+
+
+#### Advanced
+
+The program has a class molar_mass(), which takes the optinal argument <name>. If <name> is given this will be treated as the structre, if not the program will aks for it.
+You can use
+ ```
+ sample123 = molar_mass("H2O")
+ print(sample123)
+ ```
+ to get the information on the molar mass, or just 
+ ```
+ M = calculate("H2O")
+ ```
+ to initialize M with the molar mass as a float.
+ 
+ To calculate the precursor masses, you'll need to call
+ ```
+ sample123.precursor()
+ ```
+ 
+ If you want to access the data on the molar masses, you can use
+ ```
+ sample123.data
+ sample123.precursor_data
+ sample123.M
+ ```
+ for the data on the compound respectively the precursors and the total molar mass of the compound.
 
 ## Authors
 
