@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 """
+Yields the class molar_mass() and a function calculate() for calculating
+molar masses of samples.
+For further information please see https://github.com/LauKr/Molar-mass-calculator
+
 Created on Sun Jun 28 13:31:32 2020
 
 @author: Laurenz Kruty
@@ -163,7 +167,6 @@ class molar_mass():
             for i in range(data_var.shape[0]):
                 data_var.loc[i, "Molar Mass"] = float(self.database[data_var.loc[i, "Element"]])
                 data_var.loc[i, "Total Molar Mass"] = data_var.loc[i, "Molar Mass"] * data_var.loc[i, "Quantity"]
-            print(data_var)
             return data_var
         except ValueError as err:
             print(f"I'm sorry, I couldn't translate {name} into a structural formular.")
