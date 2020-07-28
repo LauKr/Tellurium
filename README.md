@@ -5,8 +5,6 @@
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
 ### Prerequisites
 
 The program requires Python 3.x
@@ -23,7 +21,7 @@ $ pip install numpy pandas
 Get the .py file by either cloning, downloading or downloading as .zip and unzipping.
 Then use python for starting the [MolarMassCalculator.py](MolarMassCalculator.py) file.
 
-For example
+For example:
 ```
 $ python3 Molar-mass-calculator/MolarMassCalculator.py
 ```
