@@ -11,22 +11,24 @@ The program requires Python 3.x
 ```
 $ apt-get install python3.6
 ```
-as well as numpy & pandas
+as well as numpy, pandas & PyQt5 (for GUI only)
 ```
-$ pip install numpy pandas
+$ pip install numpy pandas PyQt5
 ```
 
 ### Setup
 
 Get the .py file by either cloning, downloading or downloading as .zip and unzipping.
-Then use python for starting the [MolarMassCalculator.py](MolarMassCalculator.py) file.
+Then use python for starting the [MolarMassCalculator_console.py](MolarMassCalculator_console.py) file.
 
 For example:
 ```
-$ python3 Molar-mass-calculator/MolarMassCalculator.py
+$ python3 Molar-mass-calculator/MolarMassCalculator_console.py
 ```
 
 ### Usage
+
+Either use the GUI.py for a graphical interface or use MolarMassCalculator_console.py for a console input based version.
 
 #### Basics
 The program should ask for a structure name. This name can be inserted like _La2O3_. If the name cannot automatically converted into the necessary information which elements occure how often, the user will be asked to insert this information manually.
@@ -34,6 +36,8 @@ The molar mass is is printed and the user will be asked if he/she wants to calcu
 This information should be inserted like in the following example:
 
 **Reaction:** H2 + 1/2 O2 -> H2O
+
+Console only:
 
 **Input:**
 
@@ -90,3 +94,7 @@ You can use
 ## License
 
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgement
+
+This project was created using not only [Python](https://www.python.org/), but also [Qt](https://www.qt.io/).
