@@ -12,7 +12,7 @@ Created on Sun Jun 28 13:31:32 2020
 import numpy as np
 import pandas as pd
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 
 class molar_mass():
@@ -183,7 +183,7 @@ class molar_mass():
                 data_var.loc[i, "Total Molar Mass"] = data_var.loc[i, "Molar Mass"] * data_var.loc[i, "Quantity"]
             return data_var
 
-    def precursor(self):
+    def precursor(self, pre_input="", sample_mass=""):
         """
         Calculate the necessary masses of precursor materials.
 
@@ -192,6 +192,24 @@ class molar_mass():
         pandas.DataFrame
             An overview of the different precursers used.
         """
+        if len(pre_input) != 0:
+            pre_number = pre_input.shape[0]
+            if sample_mass == "":
+                sample_mass = float(input("How much sample do you want to synthesize? [g]"))
+            sample_mol = sample_mass/self.M
+            self.precursor_data = pd.DataFrame(np.empty((pre_number, 5)), columns=[
+            "Precursor", "Molar Mass", "Quantity", "Total Molar Mass", "Gram"])
+            for i in range(pre_number):
+                pre_name = pre_input.loc[i,"Precursor"]
+                precursor = self.get_elements(pre_name)
+                precursor_M = precursor["Total Molar Mass"].sum()
+                self.precursor_data.loc[i, "Precursor"] = pre_name
+                self.precursor_data.loc[i, "Molar Mass"] = precursor_M
+                self.precursor_data.loc[i, "Quantity"] = float(pre_input.loc[i,"Quantity"])
+                self.precursor_data.loc[i, "Total Molar Mass"] = self.precursor_data.loc[i, "Molar Mass"] * self.precursor_data.loc[i, "Quantity"]
+                self.precursor_data.loc[i, "Gram"] = self.precursor_data.loc[i, "Total Molar Mass"] * sample_mol
+            return self.precursor_data
+
         print(f'Ah, you want to calculate the necessary precursor masses? Nice!')
         print(f"Let's try it!")
         pre_number = int(input('How many precursors do you use?'))
