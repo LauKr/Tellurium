@@ -158,6 +158,8 @@ def mass_calc():
         sample_mass = float(sample_mass)
     except ValueError:
         raise
+    num_mol = sample_mass/structure.M
+    window.label_mols.setText(f'Equivalent to {num_mol} mol.')
     number_reagents = window.tableWidget.rowCount()
     pre_input = pd.DataFrame(np.empty((number_reagents, 2)), columns=["Precursor", "Quantity"])
     for n in range(number_reagents):
