@@ -18,7 +18,7 @@ from PyQt5.QtCore import *
 app = QtWidgets.QApplication(sys.argv)
 
 
-#app.setStyle("Fusion")
+# app.setStyle("Fusion")
 
 window = uic.loadUi("mainwindow.ui")
 
@@ -46,11 +46,12 @@ def on_button_clicked():
         window.calc_button.setDisabled(True)
         return 1
 
+
 def show_about_dialog():
     text = "<center>" \
         "<h1>Molar Mass Calculator</h1>" \
         "</center>" \
-        "<p>Version v1.0.0<br/>" \
+        "<p>Version v"+main.VERSION+"<br/>" \
         "Copyright &copy; 2020 Lau.</p>"\
         "Distributed under the terms of the General Public Licence V3."
 
@@ -58,7 +59,9 @@ def show_about_dialog():
 def show_help_dialog():
     text = "<h1>Help: Molar Mass Calculator</h1>"\
         "<center>"\
-        "Further information"
+        "<h3>Further information:</h3>"\
+        "README.md"\
+        "or on <a href=\'https://github.com/LauKr/Molar-mass-calculator\'>https://github.com/LauKr/Molar-mass-calculator</a>"
     QMessageBox.about(window, "Help", text)
 def dark_mode():
     mode = 'dark'
@@ -174,6 +177,24 @@ def enable_calc_button():
     window.calc_button.setDisabled(False)
 def enable_mass_button():
     window.calc_mass.setDisabled(False)
+def save():
+    savename = "test.txt"
+    options = QFileDialog.Options()
+    #options |= QFileDialog.DontUseNativeDialog
+    fileName, _ = QFileDialog.getSaveFileName(window,"QFileDialog.getSaveFileName()","","All Files (*);;Text Files (*.txt)", options=options)
+    if fileName:
+        with open(savename, "w") as file:
+            file.write(f"Molar Mass Calculator: Version v{main.VERSION}\nby Lau\n\n")
+            file.write("Structure: "+window.input_name.text())
+            file.write("\nMolar mass: ")
+            file.write(str(main.molar_mass(window.input_name.text()).M)+" g/mol")
+            file.write(f"\nSynthesiseing {window.sample_mass.text()} g, {window.label_mols.text()}")
+            file.write("\n\nPrecursor:\n")
+            file.write("Material\tHow often present?\tRequired mass\n")
+            for n in range(window.tableWidget.rowCount()):
+                row = window.tableWidget.item(n, 0).text()+"\t\t"+window.tableWidget.item(n, 1).text()+"\t\t\t"+window.tableWidget.item(n, 2).text()+" g"
+                file.write(str(row)+"\n")
+    return 0
 window.calc_button.setDisabled(True)
 window.calc_mass.setDisabled(True)
 window.input_name.textChanged.connect(enable_calc_button)
@@ -182,6 +203,7 @@ window.addRow.clicked.connect(addRow)
 window.delRow.clicked.connect(remRow)
 window.calc_mass.clicked.connect(mass_calc)
 window.calc_button.clicked.connect(on_button_clicked)
+window.saveButton.clicked.connect(save)
 # Actions
 window.actionAbout.triggered.connect(show_about_dialog)
 window.actionHelp_Readme.triggered.connect(show_help_dialog)

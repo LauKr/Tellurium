@@ -12,7 +12,7 @@ Created on Sun Jun 28 13:31:32 2020
 import numpy as np
 import pandas as pd
 
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 
 
 class molar_mass():

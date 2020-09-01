@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>C:/Users/Lau/Desktop/Website/Logo.png</normaloff>C:/Users/Lau/Desktop/Website/Logo.png</iconset>
+    <normaloff>//fmq-cifs.tik.uni-stuttgart.de/Takagi_group/shared/Kruty/Data/python/Molar-mass-calculator/logo.png</normaloff>//fmq-cifs.tik.uni-stuttgart.de/Takagi_group/shared/Kruty/Data/python/Molar-mass-calculator/logo.png</iconset>
   </property>
   <property name="locale">
    <locale language="English" country="Germany"/>
@@ -348,6 +348,19 @@
       </property>
       <property name="text">
        <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="saveButton">
+      <property name="geometry">
+       <rect>
+        <x>670</x>
+        <y>380</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>save</string>
       </property>
      </widget>
     </widget>
