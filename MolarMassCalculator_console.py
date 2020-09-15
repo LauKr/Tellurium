@@ -64,7 +64,6 @@ class molar_mass():
                         'Rg': 281, 'Cn': 285, 'Nh': 284, 'Fl': 289, 'Mc': 289,
                         'Lv': 292, 'Ts': 294, 'Og': 294
                         }
-        print(f'Hello, welcome to Molar-Mass-Calculator Version {VERSION}.\n')
         try:
             if name == '':
                 name = input("How is your structure called?")
@@ -126,6 +125,7 @@ class molar_mass():
                 raise ValueError("Seems like your structure name is empty.")
             tmp = 0
             n = 0
+            var_klammern = 0
             data_var = pd.DataFrame(np.empty((1, 4)), columns=["Element",
                                                                "Molar Mass",
                                                                "Quantity",
@@ -134,16 +134,25 @@ class molar_mass():
                 if name[i].isnumeric():
                     if name[i-1] == '.' or name[i-1].isnumeric():
                         pass
-                    else:
+                    elif name[i-1].isalpha():
                         data_var.loc[n, "Element"] = name[tmp:i]
                         tmp = i
+
+                    elif name[i-1] == ")":
+                        for k in range(klammer_diff):
+                            print(data_var)
+                            data_var.loc[data_var.shape[0]-1-k, "Quantity"] *= name[i]
+                        #multiplizieren mit differenz
+                        # *= name[i] nur wenn name[i] .numeric
                 elif name[i].isupper():
-                    if not name[i-1].isnumeric():
+                    if not (name[i-1].isnumeric() or (name[i-1] == "(")):
                         # No number -> 1
                         data_var.loc[n, "Element"] = name[tmp:i]
                         data_var.loc[n, "Quantity"] = 1
                     elif i == 0:
                         continue
+                    elif name[i-1] == "(":
+                        print("Klammer")
                     else:
                         data_var.loc[n, "Quantity"] = float(name[tmp:i])
                     tmp = i
@@ -152,6 +161,39 @@ class molar_mass():
                         ]))
                     if not i == 0:
                         n += 1
+
+# Structure starting with ( will lead to error, weil (LaOH) zb beim La sofort ne neue runde macht, also 1. element NAN
+
+
+
+                elif name[i] == "(":
+                    if var_klammern > 0:
+                        print("Error, nested braces are not supported yet.")
+                    var_klammern += 1
+                    if name[i-1].isnumeric():
+                        pass
+                    elif name[i-1].isalpha():
+                        data_var.loc[n, "Element"] = name[tmp:i]
+                        data_var.loc[n, "Quantity"] = 1
+                    klammer_temp = data_var.copy()
+                    #tmp = i
+                    #data_var.append(pd.DataFrame(np.empty((1, 4)), columns=[
+                    #    "Element", "Molar Mass", "Quantity", "Total Molar Mass"
+                    #    ]))
+                elif name[i] == ")":
+                    var_klammern -= 1
+                    if klammer_temp.shape == data_var.shape:
+                        print("No change?")
+                    elif klammer_temp.shape != data_var.shape:
+                        klammer_diff = abs(klammer_temp.shape[0] - data_var.shape[0])
+                    #for k in range(klammer_diff):
+                    #    klammer_elements[k] = data_var.loc[-1-klammer_diff, "Element"]
+                    #    klammer_numbers[k] = data_var.loc[-1-klammer_diff, "Quantity"]
+
+
+
+
+
                 if i == len(name)-1:
                     # The last is propably no uppercase
                     if name[i].isnumeric():
@@ -164,9 +206,19 @@ class molar_mass():
                         data_var.loc[n, "Quantity"] = 1
                     else:
                         raise ValueError('ValueError: Wait, what is your last character? Neither number nor a letter?')
+            if True:  # sort for multiple same-element-entries and add them
+                data_sorted = data_var.groupby(['Element'])["Quantity"].sum()
+                if data_var.shape[0] != data_sorted.shape[0]:
+#                    data_var_copy = data_var.copy()
+                    data_var = pd.DataFrame(np.empty((data_sorted.shape[0], 4)), columns=[
+                        "Element", "Molar Mass", "Quantity", "Total Molar Mass"])
+                    for n in range(data_var.shape[0]):
+                        data_var.loc[n, "Element"] = data_sorted.index[n]
+                        data_var.loc[n, "Quantity"] = data_sorted[data_var.loc[n, "Element"]]
             for i in range(data_var.shape[0]):
                 data_var.loc[i, "Molar Mass"] = float(self.database[data_var.loc[i, "Element"]])
                 data_var.loc[i, "Total Molar Mass"] = data_var.loc[i, "Molar Mass"] * data_var.loc[i, "Quantity"]
+            print(data_var)
             return data_var
         except ValueError as err:
             print(f"I'm sorry, I couldn't translate {name} into a structural formular.")
@@ -254,6 +306,7 @@ def calculate(name=''):
 
 
 if __name__ == "__main__":
+    print(f'Hello, welcome to Molar-Mass-Calculator Version {VERSION}.\n')
     test = molar_mass()
     print(test)
     input_pre = input('Do you also want to calculate precursor masses? [y/N]')

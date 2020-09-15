@@ -188,14 +188,31 @@ def save():
             file.write(f"Molar Mass Calculator: Version v{main.VERSION}\nby Lau\n\n")
             file.write("Structure: "+window.input_name.text())
             file.write("\nMolar mass: ")
-            file.write(str(structure.M)+" g/mol\n")
-            file.write("Provided by\n"+structure.data.to_markdown())
+            file.write(str(structure.M)+" g/mol\n\n")
+            try:
+                file.write("Provided by\n"+structure.data.to_markdown())
+            except:
+                print("tabulate not found, proceeding without markdown")
+                file.write("Provided by\n")
+                for n in range(window.tableWidget.rowCount()):
+                    row = str(structure.data.loc[n, "Element"])+"\t\t"+str(structure.data.loc[n, "Molar Mass"])+"\t\t\t"+str(structure.data.loc[n, "Quantity"])+"\t\t"+str(structure.data.loc[n, "Total Molar Mass"])
+                    file.write(row+"\n")
             file.write(f"\n\n\nSynthesising {window.sample_mass.text()} g, {window.label_mols.text()}")
             file.write("\n\nPrecursor:\n")
-            file.write("Material\tHow often present?\tRequired mass\n")
-            for n in range(window.tableWidget.rowCount()):
-                row = window.tableWidget.item(n, 0).text()+"\t\t"+window.tableWidget.item(n, 1).text()+"\t\t\t"+window.tableWidget.item(n, 2).text()+" g"
-                file.write(str(row)+"\n")
+            try:
+                save_data = pd.DataFrame(np.empty((window.tableWidget.rowCount(), 3)),
+                                         columns=["Precursor",
+                                                  "Quantity", "Required Mass [g]"])
+                for n in range(window.tableWidget.rowCount()):
+                    save_data.loc[n, "Precursor"] = window.tableWidget.item(n, 0).text()
+                    save_data.loc[n, "Quantity"] = window.tableWidget.item(n, 1).text()
+                    save_data.loc[n, "Required Mass [g]"] = window.tableWidget.item(n, 2).text()
+                file.write(save_data.to_markdown())
+            except:
+                file.write("Material\tHow often present?\tRequired mass\n")
+                for n in range(window.tableWidget.rowCount()):
+                    row = window.tableWidget.item(n, 0).text()+"\t\t"+window.tableWidget.item(n, 1).text()+"\t\t\t"+window.tableWidget.item(n, 2).text()+" g"
+                    file.write(str(row)+"\n")
     print("Successfully saved.")
     return 0
 window.calc_button.setDisabled(True)
