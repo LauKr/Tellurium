@@ -11,11 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Molar mass calculator by Lau</string>
+   <string>Tellurium: Molar mass calculation Framework, by Lau</string>
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>//fmq-cifs.tik.uni-stuttgart.de/Takagi_group/shared/Kruty/Data/python/Molar-mass-calculator/logo.png</normaloff>//fmq-cifs.tik.uni-stuttgart.de/Takagi_group/shared/Kruty/Data/python/Molar-mass-calculator/logo.png</iconset>
+    <normaloff>fav.png</normaloff>fav.png</iconset>
   </property>
   <property name="locale">
    <locale language="English" country="Germany"/>
@@ -71,7 +71,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="elideMode">
      <enum>Qt::ElideNone</enum>
@@ -406,9 +406,9 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>202</x>
+      <x>290</x>
       <y>11</y>
-      <width>234</width>
+      <width>171</width>
       <height>23</height>
      </rect>
     </property>
@@ -418,48 +418,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Welcome to Molar Mass Calculator</string>
-    </property>
-   </widget>
-   <widget class="QTextBrowser" name="textBrowser">
-    <property name="geometry">
-     <rect>
-      <x>442</x>
-      <y>11</y>
-      <width>51</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="autoFillBackground">
-     <bool>true</bool>
-    </property>
-    <property name="inputMethodHints">
-     <set>Qt::ImhNone</set>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::NoFrame</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Plain</enum>
-    </property>
-    <property name="lineWidth">
-     <number>0</number>
-    </property>
-    <property name="verticalScrollBarPolicy">
-     <enum>Qt::ScrollBarAlwaysOff</enum>
-    </property>
-    <property name="horizontalScrollBarPolicy">
-     <enum>Qt::ScrollBarAlwaysOff</enum>
-    </property>
-    <property name="html">
-     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;by &lt;a href=&quot;https://laurenzkruty.de/&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;Lau&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-    <property name="openExternalLinks">
-     <bool>true</bool>
+     <string>Welcome to Tellurium</string>
     </property>
    </widget>
   </widget>
@@ -492,6 +451,9 @@ p, li { white-space: pre-wrap; }
     </property>
     <addaction name="actionDark_mode"/>
     <addaction name="actionLight_mode"/>
+    <addaction name="separator"/>
+    <addaction name="actionEncrypt"/>
+    <addaction name="actionDecrypt"/>
    </widget>
    <addaction name="menuSettings"/>
    <addaction name="menuHelp"/>
@@ -515,6 +477,16 @@ p, li { white-space: pre-wrap; }
   <action name="actionLight_mode">
    <property name="text">
     <string>Light mode</string>
+   </property>
+  </action>
+  <action name="actionEncrypt">
+   <property name="text">
+    <string>Encrypt</string>
+   </property>
+  </action>
+  <action name="actionDecrypt">
+   <property name="text">
+    <string>Decrypt</string>
    </property>
   </action>
  </widget>

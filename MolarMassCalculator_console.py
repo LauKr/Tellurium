@@ -141,7 +141,7 @@ class molar_mass():
                     elif name[i-1] == ")":
                         for k in range(klammer_diff):
                             print(data_var)
-                            data_var.loc[data_var.shape[0]-1-k, "Quantity"] *= name[i]
+                            data_var.loc[data_var.shape[0]-1-k, "Quantity"] *= int(name[i])
                         #multiplizieren mit differenz
                         # *= name[i] nur wenn name[i] .numeric
                 elif name[i].isupper():
@@ -307,9 +307,9 @@ def calculate(name=''):
 
 if __name__ == "__main__":
     print(f'Hello, welcome to Molar-Mass-Calculator Version {VERSION}.\n')
-    test = molar_mass()
+    test = molar_mass('La(NiOs)3')
     print(test)
-    input_pre = input('Do you also want to calculate precursor masses? [y/N]')
+    input_pre = 'n'#input('Do you also want to calculate precursor masses? [y/N]')
     if input_pre == ('y' or 'Y' or 'yes' or 'Yes'):
         print(test.precursor())
     elif input_pre == ('n' or 'N' or 'no' or 'No'):

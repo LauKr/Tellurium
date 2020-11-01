@@ -4,6 +4,8 @@
 Created on Tue Aug  4 10:00:28 2020
 
 @author: Lau
+
+Title: Tellurium
 """
 
 import sys
@@ -11,7 +13,7 @@ from PyQt5 import QtWidgets, uic
 import MolarMassCalculator_console as main
 import numpy as np
 import pandas as pd
-from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtGui import QPalette, QColor, QIcon
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
@@ -25,7 +27,7 @@ window = uic.loadUi("mainwindow.ui")
 def on_button_clicked():
     name = window.input_name.text()
     tmp_row_numb = window.dataframe.rowCount()
-    if tmp_row_numb is not 0:
+    if tmp_row_numb != 0:
         for _ in range(tmp_row_numb):
 	        window.dataframe.removeRow(0)
     if name != '':
@@ -49,20 +51,21 @@ def on_button_clicked():
 
 def show_about_dialog():
     text = "<center>" \
-        "<h1>Molar Mass Calculator</h1>" \
+        "<h1>Tellurium</h1>" \
+        "<h2>A Molar Mass Calculation Framework</h2>" \
         "</center>" \
         "<p>Version v"+main.VERSION+"<br/>" \
         "Copyright &copy; 2020 Lau.</p>"\
-        "<a href=\'https://github.com/LauKr/Molar-mass-calculator\'>https://github.com/LauKr/Molar-mass-calculator/</a>\n"\
+        "<a href=\'https://github.com/LauKr/Tellurium\'>https://github.com/LauKr/Tellurium/</a>\n"\
         "\nDistributed under the terms of the General Public Licence V3."
 
     QMessageBox.about(window, "About Molar Mass Calculator", text)
 def show_help_dialog():
-    text = "<h1>Help: Molar Mass Calculator</h1>"\
+    text = "<h1>Help: Tellurium</h1>"\
         "<center>"\
         "<h3>Further information:</h3>"\
         "README.md or on "\
-        "<a href=\'https://github.com/LauKr/Molar-mass-calculator\'>https://github.com/LauKr/Molar-mass-calculator</a>"
+        "<a href=\'https://github.com/LauKr/Tellurium\'>https://github.com/LauKr/Tellurium</a>"
     QMessageBox.about(window, "Help", text)
 def dark_mode():
     mode = 'dark'
@@ -185,7 +188,7 @@ def save():
     if fileName:
         with open(fileName, "w") as file:
             structure = main.molar_mass(window.input_name.text())
-            file.write(f"Molar Mass Calculator: Version v{main.VERSION}\nby Lau\n\n")
+            file.write(f"Tellurium:\n\nMolar Mass Calculator: Version v{main.VERSION}\nby Lau\n\n")
             file.write("Structure: "+window.input_name.text())
             file.write("\nMolar mass: ")
             file.write(str(structure.M)+" g/mol\n\n")
@@ -215,6 +218,13 @@ def save():
                     file.write(str(row)+"\n")
     print("Successfully saved.")
     return 0
+
+app_icon = QIcon()
+#app_icon.addFile('logo_qiP_icon.ico')
+app_icon.addFile('fav.png')
+app.setWindowIcon(app_icon)
+window.setWindowIcon(QIcon('fav.png'))
+app.setWindowIcon(QIcon('fav.png'))
 window.calc_button.setDisabled(True)
 window.calc_mass.setDisabled(True)
 window.input_name.textChanged.connect(enable_calc_button)
@@ -229,6 +239,8 @@ window.actionAbout.triggered.connect(show_about_dialog)
 window.actionHelp_Readme.triggered.connect(show_help_dialog)
 window.actionDark_mode.triggered.connect(dark_mode)
 window.actionLight_mode.triggered.connect(light_mode)
+#window.actionEncrypt.triggered.connect(crypt)
+#window.actionDecrypt.triggered.connect(decrypt)
 #window.exit_button.clicked.connect(app.exit)
 window.show()
 app.exec()
